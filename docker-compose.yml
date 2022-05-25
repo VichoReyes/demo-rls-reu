@@ -1,0 +1,36 @@
+# docker-compose.yml
+
+version: '3'
+services:
+  server:
+    image: postgrest/postgrest
+    ports:
+      - "3000:3000"
+    environment:
+      PGRST_DB_URI: postgres://authenticator:password@db:5432/postgres
+      PGRST_DB_SCHEMA: public
+      PGRST_DB_ANON_ROLE: web_anon
+      PGRST_OPENAPI_SERVER_PROXY_URI: http://127.0.0.1:3000
+      PGRST_JWT_SECRET: BP8FDBF35QtTRXI2N8g34Ck7SjDIydl2
+    depends_on:
+      - db
+  db:
+    image: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    volumes:
+      - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+  # Uncomment this if you want to persist the data.
+  #   - "./pgdata:/var/lib/postgresql/data"
+  swagger:
+    image: swaggerapi/swagger-ui
+    ports:
+      - "8080:8080"
+    expose:
+      - "8080"
+    environment:
+      API_URL: http://localhost:3000/

@@ -1,0 +1,12 @@
+resource Repository {
+  inherit_from Organization;
+
+  "reader" if "admin";
+}
+
+resource Organization {
+  table_name "organizations" # this could be unnecesary
+  roles = ["unprivileged", "reader", "admin"] via user_org;
+
+  "reader" if not "members_need_admin";
+}
