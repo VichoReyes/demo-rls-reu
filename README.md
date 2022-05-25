@@ -52,7 +52,7 @@ http PATCH ":3000/user_profiles?users_id=eq.1" "Authorization:Bearer $ALICE" "de
 
 La verdad no estoy muy seguro de cuál es la forma "segura" de hacer esto. Porque "hackear" los intentos simples es muy básico:
 
-```
+```sql
 $ docker-compose exec db psql -U postgres
 
 -- esto funciona bien!
@@ -65,7 +65,10 @@ set role postgres;
 -- muestra el mismo resultado que web_anon, supongo que porque el POLICY que falla se toma como falso
 set role web_logged;
 select * from user_profiles;
--- no sé cómo poner un user_id donde lo pone postgrest
 
+-- ponemos el user_id para ser charlie, seguimos con rol web_logged
+select set_config('request.jwt.claims', '{"user_id": 3, "role": "web_logged"}', false);
+select * from user_profiles; -- funciona!
+-- el problema es que podríamos haber puesto cualquier número, no conozco una forma de limitar los set_config todavía
 ```
 

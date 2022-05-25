@@ -4,6 +4,9 @@ grant all on user_profiles to web_logged;
 grant SELECT on users to web_anon;
 grant all on user_profiles to web_anon;
 
+grant all on claims to web_logged;
+grant all on claims to web_anon;
+
 -- pero después decimos jajaj no era verdad saludos
 ALTER TABLE user_profiles ENABLE ROW LEVEL SECURITY;
 

@@ -17,5 +17,7 @@ create table user_profiles (
     pic_url text,
     descrip text not null default '',
     is_private boolean
-)
+);
+
+create view claims as select current_setting('request.jwt.claims');
 
