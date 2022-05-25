@@ -1,41 +1,12 @@
-insert into users (
-    username
-) values ('vicho');
+-- Populate the table
+INSERT INTO users (username) VALUES
+    ('Alice'),
+    ('Bob'),
+    ('Charlie');
 
-insert into organizations (
-    org_name,
-    members_need_admin
-) values (
-    'nns',
-    true
-), (
-    'dcc',
-    false
-);
+INSERT INTO user_profiles (users_id, pic_url, descrip, is_private) VALUES
+    (1, 'alice_pic.jpg', 'hola, soy Alice y esta es mi descripción', false),
+    (2, 'bob_pic.jpg', 'hola, soy Bob y esta es mi descripción', false),
+    (3, 'charlie.png', 'Charlie, un tipo preocupado de su privacidad, con perfil privado', true);
 
-insert into user_org (
-    organization_id,
-    user_id
-) values (
-    1,
-    1
-), (
-    2,
-    1
-);
 
--- me ascendieron
-update user_org
-set is_admin = true
-where organization_id = 1 and user_id = 1;
-
-insert into repositories (
-    organization_id,
-    repo_name
-) values (
-    1,
-    'sistema_espionaje'
-), (
-    2,
-    'programa_tranqui'
-);

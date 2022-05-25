@@ -1,35 +1,19 @@
-grant all on repositories to web_logged;
-grant all on user_org to web_logged;
-grant all on organizations to web_logged;
+-- Primero permitimos todo en user_profiles
+grant SELECT on users to web_logged;
+grant all on user_profiles to web_logged;
+grant SELECT on users to web_anon;
+grant all on user_profiles to web_anon;
 
-alter table repositories enable row level security;
--- alter table user_org enable row level security;
-alter table organizations enable row level security;
+-- pero después decimos jajaj no era verdad saludos
+ALTER TABLE user_profiles ENABLE ROW LEVEL SECURITY;
 
-create policy org_repo_policy on repositories
-    using
-    (cast(current_setting('request.jwt.claims', true)::json->>'user_id' as integer)
-        in
-    (select user_org.user_id 
-        from
-            user_org,
-            organizations orgs
-        where
-            -- repo belongs to organization
-            orgs.id = repositories.id
-        and 
-            -- user is admin
-            (user_org.is_admin
-            or
-            -- org doesn't require admin privileges to see repos
-            orgs.members_need_admin = false)));
+-- cualquier usuario (e incluso personas no logueadas) puede ver todos los perfiles que no sean privados
+CREATE POLICY all_view ON user_profiles FOR SELECT USING (not is_private);
+-- cada usuario logueado puede ver y modificar su propio perfil, pero su descripción no puede contener garabatos
+CREATE POLICY user_view_mod ON user_profiles FOR ALL TO web_logged
+  USING (cast(current_setting('request.jwt.claims', true)::json->>'user_id' as integer) = users_id)
+  WITH CHECK (
+    cast(current_setting('request.jwt.claims', true)::json->>'user_id' as integer) = users_id AND
+    descrip not ilike '%recorcholis%'
+  );
 
-create policy visible_orgs on organizations
-    using
-    (cast(current_setting('request.jwt.claims', true)::json->>'user_id' as integer)
-        in
-    (select user_org.user_id
-        from
-            user_org
-        where
-            organizations.id = user_org.organization_id));
