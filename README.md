@@ -72,3 +72,7 @@ select * from user_profiles; -- funciona!
 -- el problema es que podríamos haber puesto cualquier número, no conozco una forma de limitar los set_config todavía
 ```
 
+## Usar roles de postgres en vez de user_id
+
+Es la forma para la que está diseñado originalmente RLS, y hay un [ejemplo en la documentación de postgres](https://www.postgresql.org/docs/current/ddl-rowsecurity.html).
+
